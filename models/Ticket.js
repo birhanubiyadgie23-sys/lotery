@@ -1,15 +1,12 @@
-const mongoose = require('mongoose');
-
-const ticketSchema = new mongoose.Schema({
-  fullName: { type: String, required: true },
-  phone: { type: String, required: true },
-  paymentMethod: { type: String, required: true },
-  transactionId: { type: String, required: true, unique: true },
-  ticketNumber: { type: String, required: true, unique: true },
-  status: { type: String, default: 'Pending' }, // Pending, Approved, Rejected
-  isWinner: { type: Boolean, default: false },
-  prizeWon: { type: String, default: null },
-  createdAt: { type: Date, default: Date.now }
-});
-
-module.exports = mongoose.model('Ticket', ticketSchema);
+CREATE TABLE tickets (
+    id SERIAL PRIMARY KEY,
+    fullName TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    paymentMethod TEXT NOT NULL,
+    transactionId TEXT UNIQUE NOT NULL,
+    ticketNumber TEXT UNIQUE NOT NULL,
+    status TEXT DEFAULT 'Pending',
+    isWinner BOOLEAN DEFAULT FALSE,
+    prizeWon TEXT,
+    createdAt TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW())
+);
