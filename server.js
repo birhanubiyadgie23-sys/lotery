@@ -10,7 +10,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // የ Supabase ግንኙነት ማዋቀሪያ (በሰጡን API Keys የተሰራ)
 const supabaseUrl = 'https://mepkkaulyxdbllekzqvq.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1lcGtrYXVseGRiYmxla3p2cXZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM5NjI3OTEsImV4cCI6MjEwOTUzODc5MX0.0XdvgT4BRuF5n1Ys6-rmayp9XodfvcXizk2W6A3Io_4';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1lcGtrYXVseGRiYmxla3p2cXZ0Ixlwcm9sZSI6ImFub24iLCJpYXQiOjE3OTM5NjI3OTEsImV4cCI6MjEwOTUzODc5MX0.0XdvgT4BRuF5n1Ys6-rmayp9XodfvcXizk2W6A3Io_4';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // 1. ቲኬት መግዛት
@@ -130,7 +130,7 @@ app.get('/api/admin/tickets', async (req, res) => {
   }
 });
 
-// 7. አድሚን - ቲኬት ማጽደቅ (በ MongoDB የ id አወቃቀር ምትክ በ Supabase ሠንጠረዥ አምድ id የሚሰራ)
+// 7. አድሚን - ቲኬት ማጽደቅ
 app.post('/api/admin/approve/:id', async (req, res) => {
   try {
     const { error } = await supabase
