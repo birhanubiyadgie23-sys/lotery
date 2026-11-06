@@ -196,7 +196,8 @@
   </div>
 
   <script>
-    const API = 'api';
+    // አንጻራዊ ዱካ (Relative path) በመጠቀም ከየትኛውም ሰርቨር አድራሻ ጋር በራስ-ሰር እንዲገናኝ ይደረጋል
+    const API = '/api';
 
     function switchTab(tabId) {
       ['userTab', 'prizesTab', 'drawTab', 'adminTab'].forEach(t => {
@@ -325,7 +326,7 @@
             <td class="py-2 px-2 font-bold text-yellow-400">${t.ticketNumber}</td>
             <td class="py-2 px-2"><span class="px-2 py-0.5 rounded font-bold ${t.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${t.status}</span></td>
             <td class="py-2 px-2">
-              ${t.status === 'Pending' ? `<button onclick="approveTicket('${t._id}')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold">አጽድቅ</button>` : 'ጸድቋል'}
+              ${t.status === 'Pending' ? `<button onclick="approveTicket('${t.id}')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold">አጽድቅ</button>` : 'ጸድቋል'}
             </td>
           </tr>`;
       });
