@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>የኢትዮጵያ ብሔራዊ ዲጂታል ሎተሪ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Ethiopic:wght@400;700&display=swap');
+    body { font-family: 'Poppins', 'Noto Sans Ethiopic', sans-serif; }
+    @media print {
+      body * { visibility: hidden; }
+      #printableTicket, #printableTicket * { visibility: visible; }
+      #printableTicket { position: absolute; left: 0; top: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-950 min-h-screen text-slate-100 p-4 md:p-6">
+
+  <div class="max-w-6xl mx-auto">
+    <!-- Header & Navigation -->
+    <header class="text-center mb-8">
+      <div class="inline-block p-3 bg-white/10 rounded-full mb-2 backdrop-blur-md shadow-lg">
+        <i class="fa-solid fa-ticket text-4xl text-yellow-400"></i>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-200">
+        የኢትዮጵያ ብሔራዊ ዲጂታል ሎተሪ
+      </h1>
+      <p class="text-slate-300 text-sm mt-1">ዕድልዎን ይሞክሩ፣ በሚሊዮኖች የሚቆጠሩ ብሮችን ያሸንፉ!</p>
+      
+      <!-- Navigation Tabs -->
+      <div class="flex flex-wrap justify-center gap-3 mt-6">
+        <button onclick="switchTab('userTab')" id="btnUserTab" class="px-5 py-2 rounded-xl font-bold bg-yellow-500 text-slate-950 transition shadow-lg">
+          <i class="fa-solid fa-house mr-2"></i> ዋና ገጽ & ግዢ
+        </button>
+        <button onclick="switchTab('prizesTab')" id="btnPrizesTab" class="px-5 py-2 rounded-xl font-bold bg-white/10 text-slate-300 hover:bg-white/25 transition shadow-lg">
+          <i class="fa-solid fa-gift mr-2"></i> የሽልማቶች ዝርዝር
+        </button>
+        <button onclick="switchTab('drawTab')" id="btnDrawTab" class="px-5 py-2 rounded-xl font-bold bg-white/10 text-slate-300 hover:bg-white/25 transition shadow-lg">
+          <i class="fa-solid fa-trophy mr-2"></i> የቀጥታ ዕጣ ማውጫ
+        </button>
+        <button onclick="switchTab('adminTab')" id="btnAdminTab" class="px-5 py-2 rounded-xl font-bold bg-white/10 text-slate-300 hover:bg-white/25 transition shadow-lg">
+          <i class="fa-solid fa-lock mr-2"></i> አድሚን ፓነል
+        </button>
+      </div>
+    </header>
+
+    <!-- 1. USER & TICKET PURCHASE TAB -->
+    <div id="userTab" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Ticket Purchase Form -->
+        <div class="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl shadow-2xl">
+          <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-yellow-300">
+            <i class="fa-solid fa-cart-shopping"></i> ቲኬት መግዣ ፎርም
+          </h2>
+          <form id="ticketForm" class="space-y-4">
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">ሙሉ ስም</label>
+              <input type="text" id="fullName" placeholder="ለምሳሌ፡ አበበ ከበደ" class="w-full p-3 bg-white/5 border border-white/20 rounded-xl focus:outline-none focus:border-yellow-400 text-white" required>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">ስልክ ቁጥር</label>
+              <input type="tel" id="phone" placeholder="09xxxxxxxx" class="w-full p-3 bg-white/5 border border-white/20 rounded-xl focus:outline-none focus:border-yellow-400 text-white" required>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">የክፍያ አማራጭ</label>
+              <select id="paymentMethod" class="w-full p-3 bg-slate-900 border border-white/20 rounded-xl focus:outline-none focus:border-yellow-400 text-white">
+                <option value="Telebirr">ቴሌብር (Telebirr - 0911223344)</option>
+                <option value="CBE">ንግድ ባንክ (CBE Birr - 1000223344)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">የትራንዛክሽን ቁጥር (TxID)</label>
+              <input type="text" id="transactionId" placeholder="የክፍያ ማረጋገጫ ቁጥር" class="w-full p-3 bg-white/5 border border-white/20 rounded-xl focus:outline-none focus:border-yellow-400 text-white" required>
+            </div>
+            <button type="submit" class="w-full py-3 bg-gradient-to-r from-yellow-500 to-amber-600 text-slate-950 font-bold rounded-xl shadow-lg hover:from-yellow-400 transition">
+              <i class="fa-solid fa-circle-check mr-2"></i> ቲኬት ቁረጥ
+            </button>
+          </form>
+        </div>
+
+        <!-- Printable / Generated Ticket Card View -->
+        <div class="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl shadow-2xl flex flex-col justify-between">
+          <div>
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-sky-300">
+              <i class="fa-solid fa-id-card"></i> የቲኬት ማረጋገጫ እና ኩፖን
+            </h2>
+            <div id="ticketCardContainer" class="hidden">
+              <div id="printableTicket" class="bg-gradient-to-r from-amber-500 to-yellow-600 text-slate-950 p-5 rounded-2xl shadow-xl relative overflow-hidden">
+                <div class="absolute right-[-20px] top-[-20px] text-white/20 text-8xl font-black">ETH</div>
+                <h3 class="font-extrabold text-lg border-b border-slate-950/20 pb-2 mb-2">የኢትዮጵያ ዲጂታል ሎተሪ ኩፖን</h3>
+                <div class="space-y-1 text-sm font-medium">
+                  <p><b>ስም:</b> <span id="cardName">---</span></p>
+                  <p><b>ስልክ:</b> <span id="cardPhone">---</span></p>
+                  <p><b>የቲኬት ቁጥር:</b> <span id="cardTicketNum" class="text-lg font-black tracking-wider bg-slate-950 text-yellow-400 px-2 py-0.5 rounded">---</span></p>
+                </div>
+                <div class="mt-4 pt-2 border-t border-slate-950/20 flex justify-between items-center text-xs">
+                  <span>ሁኔታ፦ በመጠባበቂያ ላይ (Pending)</span>
+                  <i class="fa-solid fa-qrcode text-2xl"></i>
+                </div>
+              </div>
+              <button onclick="window.print()" class="w-full mt-4 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl shadow transition">
+                <i class="fa-solid fa-print mr-2"></i> ቲኬት አትም (Print / Save)
+              </button>
+            </div>
+            <div id="noTicketMessage" class="text-center py-12 text-slate-400">
+              <i class="fa-solid fa-ticket text-5xl mb-3 text-slate-500"></i>
+              <p>እስካሁን የቆረጡት ቲኬት የለም። በስተግራ በኩል ያለውን ፎርም በመሙላት ቲኬት ይቁረጡ።</p>
+            </div>
+          </div>
+          
+          <!-- My Tickets Lookup -->
+          <div class="mt-6 pt-4 border-t border-white/10">
+            <h3 class="text-sm font-bold text-slate-200 mb-2">የገዙትን ቲኬቶች በስልክ ቁጥር ይፈልጉ</h3>
+            <div class="flex gap-2">
+              <input type="tel" id="searchPhone" placeholder="ስልክ ቁጥር..." class="w-full p-2 bg-white/5 border border-white/20 rounded-xl text-sm text-white">
+              <button onclick="searchMyTickets()" class="px-4 py-2 bg-sky-600 text-sm font-bold rounded-xl hover:bg-sky-500">ፈልግ</button>
+            </div>
+            <div id="myTicketsResult" class="mt-3 space-y-2 max-h-32 overflow-y-auto text-xs"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. PRIZES LIST TAB -->
+    <div id="prizesTab" class="space-y-6 hidden">
+      <div class="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl shadow-2xl">
+        <h2 class="text-2xl font-bold mb-4 text-yellow-300 flex items-center gap-2">
+          <i class="fa-solid fa-gift"></i> የዕጣ ሽልማቶች ዝርዝር
+        </h2>
+        <div id="prizesListContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Dynamically loaded prizes -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. LIVE DRAW TAB -->
+    <div id="drawTab" class="space-y-6 hidden">
+      <div class="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl shadow-2xl text-center">
+        <h2 class="text-2xl font-bold mb-2 text-emerald-400 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-trophy"></i> የቀጥታ የዕጣ ማውጫ እና መንኮራኩር
+        </h2>
+        <p class="text-slate-300 text-sm mb-6">ከተረጋገጡ ቲኬቶች መካከል አሸናፊውን በድምቀት ይለዩ።</p>
+        
+        <div class="relative w-64 h-64 mx-auto mb-6 flex items-center justify-center bg-gradient-to-br from-yellow-500 to-amber-700 rounded-full shadow-2xl border-4 border-white/30 animate-pulse">
+          <div class="text-slate-950 font-black text-2xl tracking-wider bg-white/80 px-4 py-2 rounded-xl shadow-inner">
+            ETH-LOTTERY
+          </div>
+        </div>
+
+        <button onclick="triggerDraw()" class="px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-2xl shadow-xl hover:from-emerald-400 transition text-lg">
+          <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> አሸናፊ አውጣ (Spin & Draw)
+        </button>
+
+        <div id="winnerResult" class="mt-6 p-5 bg-emerald-950/80 border border-emerald-500/50 rounded-2xl text-emerald-300 font-bold hidden text-xl"></div>
+      </div>
+    </div>
+
+    <!-- 4. ADMIN PANEL TAB -->
+    <div id="adminTab" class="space-y-6 hidden">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Add Prize Form -->
+        <div class="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl shadow-2xl">
+          <h3 class="text-lg font-bold mb-3 text-yellow-300"><i class="fa-solid fa-plus-circle"></i> አዲስ ሽልማት መዝግብ</h3>
+          <form id="prizeForm" class="space-y-3">
+            <input type="text" id="prizeName" placeholder="የሽልማት ስም (ምሳሌ፡ 1ኛ ደረጃ)" class="w-full p-2.5 bg-white/5 border border-white/20 rounded-xl text-sm text-white" required>
+            <input type="text" id="amount" placeholder="የገንዘብ መጠን (ምሳሌ፡ 1,000,000 ብር)" class="w-full p-2.5 bg-white/5 border border-white/20 rounded-xl text-sm text-white" required>
+            <input type="text" id="description" placeholder="መግለጫ (አማራጭ)" class="w-full p-2.5 bg-white/5 border border-white/20 rounded-xl text-sm text-white">
+            <button type="submit" class="w-full py-2.5 bg-yellow-500 text-slate-950 font-bold rounded-xl text-sm hover:bg-yellow-400">ሽልማት ጨምር</button>
+          </form>
+        </div>
+
+        <!-- Ticket Approval Management -->
+        <div class="md:col-span-2 bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl shadow-2xl">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-lg font-bold text-slate-200"><i class="fa-solid fa-shield-halved"></i> የቲኬቶች ማጽደቂያ ፓነል</h3>
+            <button onclick="adminLogout()" class="px-3 py-1 bg-white/10 hover:bg-white/25 rounded-lg text-xs font-bold"><i class="fa-solid fa-right-from-bracket mr-1"></i> ውጣ</button>
+          </div>
+          <div class="overflow-x-auto max-h-80 overflow-y-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="border-b border-white/10 text-slate-400">
+                  <th class="py-2 px-2">ስም</th>
+                  <th class="py-2 px-2">ስልክ</th>
+                  <th class="py-2 px-2">TxID</th>
+                  <th class="py-2 px-2">ቲኬት ቁጥር</th>
+                  <th class="py-2 px-2">ሁኔታ</th>
+                  <th class="py-2 px-2">እርምጃ</th>
+                </tr>
+              </thead>
+              <tbody id="adminTicketList" class="divide-y divide-white/5"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin login modal -->
+  <div id="loginModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/70 p-4">
+    <form id="loginForm" class="w-full max-w-sm bg-slate-900 border border-white/20 rounded-2xl p-6 space-y-4 shadow-2xl">
+      <h3 class="text-lg font-bold text-yellow-300"><i class="fa-solid fa-lock mr-2"></i> የአድሚን መግቢያ</h3>
+      <input id="loginEmail" type="email" autocomplete="username" placeholder="ኢሜይል" required class="w-full p-3 bg-white/5 border border-white/20 rounded-xl text-white focus:outline-none focus:border-yellow-400">
+      <input id="loginPassword" type="password" autocomplete="current-password" placeholder="ይለፍ ቃል" required class="w-full p-3 bg-white/5 border border-white/20 rounded-xl text-white focus:outline-none focus:border-yellow-400">
+      <p id="loginError" class="text-red-300 text-sm min-h-[1.25rem]"></p>
+      <div class="flex gap-2">
+        <button type="submit" class="flex-1 py-2.5 bg-yellow-500 text-slate-950 font-bold rounded-xl hover:bg-yellow-400 disabled:opacity-50">ግባ</button>
+        <button type="button" id="loginCancel" class="px-4 py-2.5 bg-white/10 rounded-xl font-bold hover:bg-white/25">ሰርዝ</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const API = '/api';
+
+    // ---------- helpers ----------
+    // Escape anything coming from the database before putting it in innerHTML (prevents XSS)
+    function esc(v) {
+      return String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    // Reads a JSON response; if the server sent something else (404 page, crash text) say exactly what
+    async function readJson(res) {
+      const text = await res.text();
+      try {
+        return JSON.parse(text);
+      } catch {
+        const hint = res.status === 404
+          ? 'የ API አድራሻው አልተገኘም (404) — api/ አቃፊ አልተሰማራም ወይም ገጹን እንደ ፋይል ከፍተውታል'
+          : `ሰርቨሩ JSON አልመለሰም (HTTP ${res.status}): ${text.slice(0, 120)}`;
+        throw new Error(hint);
+      }
+    }
+
+    // ---------- Admin login (Supabase Auth via /api/admin/login) ----------
+    let adminToken = sessionStorage.getItem('adminToken');
+    let loginPromise = null;
+
+    function clearAdminToken() {
+      adminToken = null;
+      sessionStorage.removeItem('adminToken');
+    }
+
+    function requestLogin() {
+      if (loginPromise) return loginPromise;
+      loginPromise = new Promise((resolve, reject) => {
+        const modal = document.getElementById('loginModal');
+        const form = document.getElementById('loginForm');
+        const err = document.getElementById('loginError');
+        const cancel = document.getElementById('loginCancel');
+        err.textContent = '';
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.getElementById('loginEmail').focus();
+
+        const close = () => {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+          form.reset();
+          form.removeEventListener('submit', onSubmit);
+          cancel.removeEventListener('click', onCancel);
+          loginPromise = null;
+        };
+        const onCancel = () => { close(); reject(new Error('አልገቡም')); };
+        const onSubmit = async (e) => {
+          e.preventDefault();
+          const btn = form.querySelector('button[type="submit"]');
+          btn.disabled = true;
+          try {
+            const res = await fetch(`${API}/admin/login`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: document.getElementById('loginEmail').value,
+                password: document.getElementById('loginPassword').value
+              })
+            });
+            const data = await readJson(res);
+            if (data.success) {
+              adminToken = data.token;
+              sessionStorage.setItem('adminToken', adminToken);
+              close();
+              resolve();
+            } else {
+              err.textContent = data.message;
+            }
+          } catch (ex) {
+            err.textContent = ex.message;
+          } finally {
+            btn.disabled = false;
+          }
+        };
+        form.addEventListener('submit', onSubmit);
+        cancel.addEventListener('click', onCancel);
+      });
+      return loginPromise;
+    }
+
+    function adminLogout() {
+      clearAdminToken();
+      document.getElementById('adminTicketList').innerHTML =
+        '<tr><td colspan="6" class="text-center py-4 text-slate-400">ወጥተዋል። ለመቀጠል እንደገና ይግቡ።</td></tr>';
+    }
+
+    // All admin calls go through here: login if needed, send the Bearer token, re-login once if it expired
+    async function adminFetch(path, options = {}, retry = true) {
+      if (!adminToken) await requestLogin();
+      const res = await fetch(`${API}${path}`, {
+        ...options,
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}`, ...(options.headers || {}) }
+      });
+      if (res.status === 401) {
+        clearAdminToken();
+        if (retry) { await requestLogin(); return adminFetch(path, options, false); }
+        throw new Error('ፈቃድ የለዎትም');
+      }
+      return readJson(res);
+    }
+
+    function switchTab(tabId) {
+      ['userTab', 'prizesTab', 'drawTab', 'adminTab'].forEach(t => {
+        document.getElementById(t).classList.add('hidden');
+      });
+      ['btnUserTab', 'btnPrizesTab', 'btnDrawTab', 'btnAdminTab'].forEach(b => {
+        document.getElementById(b).className = 'px-5 py-2 rounded-xl font-bold bg-white/10 text-slate-300 hover:bg-white/25 transition shadow-lg';
+      });
+
+      document.getElementById(tabId).classList.remove('hidden');
+      const activeBtnMap = { userTab: 'btnUserTab', prizesTab: 'btnPrizesTab', drawTab: 'btnDrawTab', adminTab: 'btnAdminTab' };
+      document.getElementById(activeBtnMap[tabId]).className = 'px-5 py-2 rounded-xl font-bold bg-yellow-500 text-slate-950 transition shadow-lg';
+
+      if (tabId === 'prizesTab') loadPrizes();
+      if (tabId === 'adminTab') loadAdminTickets();
+    }
+
+    // ---------- Ticket purchase ----------
+    // The ticket number is generated by the SERVER; we display exactly what the server saved.
+    document.getElementById('ticketForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+
+      const data = {
+        fullName: document.getElementById('fullName').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        paymentMethod: document.getElementById('paymentMethod').value,
+        transactionId: document.getElementById('transactionId').value.trim()
+      };
+
+      try {
+        const res = await fetch(`${API}/buy-ticket`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await readJson(res);
+        if (result.success) {
+          const t = result.ticket;
+          document.getElementById('cardName').textContent = t.fullName;
+          document.getElementById('cardPhone').textContent = t.phone;
+          document.getElementById('cardTicketNum').textContent = t.ticketNumber;
+          document.getElementById('ticketCardContainer').classList.remove('hidden');
+          document.getElementById('noTicketMessage').classList.add('hidden');
+          alert('ቲኬትዎ በተሳካ ሁኔታ ተቆርጧል! የቲኬት ኩፖንዎን ማተም ወይም ማስቀመጥ ይችላሉ።');
+          document.getElementById('ticketForm').reset();
+        } else {
+          alert(result.message);
+        }
+      } catch (err) {
+        alert('ሰርቨር ጋር መገናኘት አልቻለም!\n\n' + err.message);
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+
+    // ---------- Prizes ----------
+    async function loadPrizes() {
+      const container = document.getElementById('prizesListContainer');
+      try {
+        const res = await fetch(`${API}/prizes`);
+        const data = await readJson(res);
+        if (!data.success) throw new Error(data.message);
+
+        const prizes = data.prizes || [];
+        if (prizes.length === 0) {
+          container.innerHTML = '<p class="text-slate-400 col-span-3 text-center">ምንም ሽልማት አልተመዘገበም</p>';
+          return;
+        }
+        container.innerHTML = prizes.map(p => `
+          <div class="bg-white/5 border border-white/10 p-5 rounded-xl shadow-lg text-center">
+            <i class="fa-solid fa-award text-3xl text-yellow-400 mb-2"></i>
+            <h3 class="font-bold text-lg text-white">${esc(p.prizeName)}</h3>
+            <p class="text-xl font-black text-amber-300 my-1">${esc(p.amount)}</p>
+            <p class="text-xs text-slate-300">${esc(p.description)}</p>
+          </div>`).join('');
+      } catch (err) {
+        console.error('Failed to load prizes:', err);
+        container.innerHTML = '<p class="text-red-300 col-span-3 text-center">ሽልማቶችን መጫን አልተቻለም</p>';
+      }
+    }
+
+    // Add Prize (Admin)
+    document.getElementById('prizeForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        prizeName: document.getElementById('prizeName').value,
+        amount: document.getElementById('amount').value,
+        description: document.getElementById('description').value
+      };
+      try {
+        const result = await adminFetch('/admin/add-prize', { method: 'POST', body: JSON.stringify(data) });
+        if (result.success) {
+          alert('ሽልማቱ በተሳካ ሁኔታ ተመዝግቧል!');
+          document.getElementById('prizeForm').reset();
+          loadPrizes();
+        } else {
+          alert(result.message);
+        }
+      } catch (err) {
+        alert(err.message || 'ሽልማት መመዝገብ አልተቻለም');
+      }
+    });
+
+    // ---------- My tickets ----------
+    async function searchMyTickets() {
+      const phone = document.getElementById('searchPhone').value.trim();
+      if (!phone) return alert('ስልክ ቁጥር ያስገቡ');
+      const box = document.getElementById('myTicketsResult');
+      try {
+        const res = await fetch(`${API}/my-tickets?phone=${encodeURIComponent(phone)}`);
+        const data = await readJson(res);
+        if (!data.success) {
+          box.innerHTML = `<p class="text-red-300">${esc(data.message)}</p>`;
+          return;
+        }
+        const tickets = data.tickets || [];
+        if (tickets.length === 0) {
+          box.innerHTML = '<p class="text-slate-400">ምንም ቲኬት አልተገኘም</p>';
+          return;
+        }
+        box.innerHTML = tickets.map(t => `
+          <div class="p-2 bg-white/5 rounded flex justify-between items-center border border-white/10">
+            <span><b>${esc(t.ticketNumber)}</b> (${esc(t.paymentMethod)})${t.isWinner ? ' 🏆 ' + esc(t.prizeWon) : ''}</span>
+            <span class="font-bold ${t.status === 'Approved' ? 'text-emerald-400' : t.status === 'Rejected' ? 'text-red-400' : 'text-amber-400'}">${esc(t.status)}</span>
+          </div>`).join('');
+      } catch (err) {
+        console.error('Search failed:', err);
+        box.innerHTML = '<p class="text-red-300">ሰርቨር ጋር መገናኘት አልቻለም</p>';
+      }
+    }
+
+    // ---------- Admin tickets ----------
+    async function loadAdminTickets() {
+      const list = document.getElementById('adminTicketList');
+      try {
+        const data = await adminFetch('/admin/tickets');
+        if (!data.success) throw new Error(data.message);
+
+        const tickets = data.tickets || [];
+        if (tickets.length === 0) {
+          list.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-slate-400">ምንም ቲኬት የለም</td></tr>';
+          return;
+        }
+        const badge = s => s === 'Approved' ? 'bg-emerald-500/20 text-emerald-400'
+                         : s === 'Rejected' ? 'bg-red-500/20 text-red-400'
+                         : 'bg-amber-500/20 text-amber-400';
+        list.innerHTML = tickets.map(t => `
+          <tr class="border-b border-white/5">
+            <td class="py-2 px-2">${esc(t.fullName)}</td>
+            <td class="py-2 px-2">${esc(t.phone)}</td>
+            <td class="py-2 px-2">${esc(t.transactionId)}</td>
+            <td class="py-2 px-2 font-bold text-yellow-400">${esc(t.ticketNumber)}</td>
+            <td class="py-2 px-2"><span class="px-2 py-0.5 rounded font-bold ${badge(t.status)}">${esc(t.status)}</span></td>
+            <td class="py-2 px-2 whitespace-nowrap">
+              ${t.status === 'Pending'
+                ? `<button data-id="${esc(t.id)}" data-status="Approved" class="statusBtn px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold">አጽድቅ</button>
+                   <button data-id="${esc(t.id)}" data-status="Rejected" class="statusBtn px-2.5 py-1 bg-red-600 hover:bg-red-500 text-white rounded font-bold">ውድቅ</button>`
+                : (t.status === 'Approved' ? 'ጸድቋል' : 'ውድቅ ሆኗል')}
+            </td>
+          </tr>`).join('');
+      } catch (err) {
+        console.error('Failed to load admin tickets:', err);
+        list.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-red-300">${esc(err.message)}</td></tr>`;
+      }
+    }
+
+    document.getElementById('adminTicketList').addEventListener('click', async (e) => {
+      const btn = e.target.closest('.statusBtn');
+      if (!btn) return;
+      btn.disabled = true;
+      try {
+        const result = await adminFetch('/admin/update-status', {
+          method: 'POST',
+          body: JSON.stringify({ id: btn.dataset.id, status: btn.dataset.status })
+        });
+        if (!result.success) alert(result.message);
+      } catch (err) {
+        alert(err.message);
+      }
+      loadAdminTickets();
+    });
+
+    // ---------- Draw ----------
+    async function triggerDraw() {
+      try {
+        const data = await adminFetch('/draw-winner', {
+          method: 'POST',
+          body: JSON.stringify({ prize: '1,000,000 ብር መኪና እና ሽልማት' })
+        });
+        const winnerBox = document.getElementById('winnerResult');
+        if (data.success) {
+          winnerBox.classList.remove('hidden');
+          winnerBox.innerHTML = `🎉 እንኳን ደስ አለዎት!<br>አሸናፊ: <span class="text-white">${esc(data.winner.fullName)}</span><br>ቲኬት ቁጥር: <span class="text-yellow-300">${esc(data.winner.ticketNumber)}</span><br>ሽልማት: ${esc(data.winner.prizeWon)}`;
+          confetti({ particleCount: 250, spread: 100, origin: { y: 0.6 } });
+        } else {
+          alert(data.message);
+        }
+      } catch (err) {
+        alert(err.message || 'ዕጣ ማውጣት አልተቻለም');
+      }
+    }
+  </script>
+</body>
+</html>
