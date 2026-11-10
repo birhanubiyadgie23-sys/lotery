@@ -6,17 +6,20 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method !== 'GET') return res.status(405).json({ success: false, message: 'Method Not Allowed' });
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
     const { data, error } = await supabase
       .from('prizes')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('createdAt', { ascending: false });
 
     if (error) throw error;
-    return res.status(200).json({ success: true, prizes: data || [] });
+
+    return res.status(200).json({ success: true, prizes: data });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
