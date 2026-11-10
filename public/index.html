@@ -214,14 +214,19 @@
       if(tabId === 'adminTab') loadAdminTickets();
     }
 
-    // Ticket Purchase & Card View
+    // Ticket Purchase & Card View (ማስተካከያው እዚህ ላይ ተደርጓል: ራንደም ቲኬት ቁጥር በራስ-ሰር ይፈጠራል)
     document.getElementById('ticketForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      
+      // አውቶማቲክ የቲኬት ቁጥር ማመንጨት (Random Ticket Number)
+      const randomTicketNum = 'ETH-' + Math.floor(100000 + Math.random() * 900000);
+
       const data = {
         fullName: document.getElementById('fullName').value,
         phone: document.getElementById('phone').value,
         paymentMethod: document.getElementById('paymentMethod').value,
-        transactionId: document.getElementById('transactionId').value
+        transactionId: document.getElementById('transactionId').value,
+        ticketNumber: randomTicketNum // ቲኬት ቁጥሩን በራስ-ሰር እንልካለን
       };
 
       try {
@@ -232,12 +237,13 @@
         });
         const result = await res.json();
         if (result.success) {
-          document.getElementById('cardName').textContent = result.ticket.fullName;
-          document.getElementById('cardPhone').textContent = result.ticket.phone;
-          document.getElementById('cardTicketNum').textContent = result.ticket.ticketNumber;
+          // ከተሳካ ኩፖኑን እናሳያለን
+          document.getElementById('cardName').textContent = data.fullName;
+          document.getElementById('cardPhone').textContent = data.phone;
+          document.getElementById('cardTicketNum').textContent = randomTicketNum;
           document.getElementById('ticketCardContainer').classList.remove('hidden');
           document.getElementById('noTicketMessage').classList.add('hidden');
-          alert('ቲኬትዎ ተቆርጧል! የቲኬት ኩፖንዎን ማተም ወይም ማስቀመጥ ይችላሉ።');
+          alert('ቲኬትዎ በተሳካ ሁኔታ ተቆርጧል! የቲኬት ኩፖንዎን ማተም ወይም ማስቀመጥ ይችላሉ።');
           document.getElementById('ticketForm').reset();
         } else {
           alert(result.message);
@@ -247,7 +253,7 @@
       }
     });
 
-    // Load Prizes (with Defensive Programming checks)
+    // Load Prizes
     async function loadPrizes() {
       try {
         const res = await fetch(`${API}/prizes`);
@@ -327,7 +333,7 @@
       }
     }
 
-    // Admin Tickets Load & Approve (with Defensive Programming checks)
+    // Admin Tickets Load & Approve
     async function loadAdminTickets() {
       try {
         const res = await fetch(`${API}/admin/tickets`);
