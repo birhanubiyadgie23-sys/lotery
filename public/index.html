@@ -136,7 +136,7 @@
       </div>
     </div>
 
-    <!-- 3. LIVE DRAW TAB (Spin Wheel Simulation) -->
+    <!-- 3. LIVE DRAW TAB -->
     <div id="drawTab" class="space-y-6 hidden">
       <div class="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl shadow-2xl text-center">
         <h2 class="text-2xl font-bold mb-2 text-emerald-400 flex items-center justify-center gap-2">
@@ -196,7 +196,6 @@
   </div>
 
   <script>
-    // አንጻራዊ ዱካ (Relative path) በመጠቀም ከየትኛውም ሰርቨር አድራሻ ጋር በራስ-ሰር እንዲገናኝ ይደረጋል
     const API = '/api';
 
     function switchTab(tabId) {
@@ -248,25 +247,31 @@
       }
     });
 
-    // Load Prizes
+    // Load Prizes (with Defensive Programming checks)
     async function loadPrizes() {
-      const res = await fetch(`${API}/prizes`);
-      const data = await res.json();
-      const container = document.getElementById('prizesListContainer');
-      container.innerHTML = '';
-      if(data.prizes.length === 0) {
-        container.innerHTML = '<p class="text-slate-400 col-span-3 text-center">ምንም ሽልማት አልተመዘገበም</p>';
-        return;
+      try {
+        const res = await fetch(`${API}/prizes`);
+        const data = await res.json();
+        const container = document.getElementById('prizesListContainer');
+        container.innerHTML = '';
+        
+        const prizes = data.prizes || [];
+        if(prizes.length === 0) {
+          container.innerHTML = '<p class="text-slate-400 col-span-3 text-center">ምንም ሽልማት አልተመዘገበም</p>';
+          return;
+        }
+        prizes.forEach(p => {
+          container.innerHTML += `
+            <div class="bg-white/5 border border-white/10 p-5 rounded-xl shadow-lg text-center">
+              <i class="fa-solid fa-award text-3xl text-yellow-400 mb-2"></i>
+              <h3 class="font-bold text-lg text-white">${p.prizeName}</h3>
+              <p class="text-xl font-black text-amber-300 my-1">${p.amount}</p>
+              <p class="text-xs text-slate-300">${p.description || ''}</p>
+            </div>`;
+        });
+      } catch (err) {
+        console.error("Failed to load prizes:", err);
       }
-      data.prizes.forEach(p => {
-        container.innerHTML += `
-          <div class="bg-white/5 border border-white/10 p-5 rounded-xl shadow-lg text-center">
-            <i class="fa-solid fa-award text-3xl text-yellow-400 mb-2"></i>
-            <h3 class="font-bold text-lg text-white">${p.prizeName}</h3>
-            <p class="text-xl font-black text-amber-300 my-1">${p.amount}</p>
-            <p class="text-xs text-slate-300">${p.description || ''}</p>
-          </div>`;
-      });
     }
 
     // Add Prize (Admin)
@@ -277,16 +282,22 @@
         amount: document.getElementById('amount').value,
         description: document.getElementById('description').value
       };
-      const res = await fetch(`${API}/admin/add-prize`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      const result = await res.json();
-      if(result.success) {
-        alert('ሽልማቱ በተሳካ ሁኔታ ተመዝግቧል!');
-        document.getElementById('prizeForm').reset();
-        loadPrizes();
+      try {
+        const res = await fetch(`${API}/admin/add-prize`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if(result.success) {
+          alert('ሽልማቱ በተሳካ ሁኔታ ተመዝግቧል!');
+          document.getElementById('prizeForm').reset();
+          loadPrizes();
+        } else {
+          alert(result.message);
+        }
+      } catch (err) {
+        alert('ሽልማት መመዝገብ አልተቻለም');
       }
     });
 
@@ -294,42 +305,57 @@
     async function searchMyTickets() {
       const phone = document.getElementById('searchPhone').value;
       if(!phone) return alert('ስልክ ቁጥር ያስገቡ');
-      const res = await fetch(`${API}/my-tickets/${phone}`);
-      const data = await res.json();
-      const box = document.getElementById('myTicketsResult');
-      box.innerHTML = '';
-      if(data.tickets.length === 0) {
-        box.innerHTML = '<p class="text-slate-400">ምንም ቲኬት አልተገኘም</p>';
-        return;
+      try {
+        const res = await fetch(`${API}/my-tickets/${phone}`);
+        const data = await res.json();
+        const box = document.getElementById('myTicketsResult');
+        box.innerHTML = '';
+        const tickets = data.tickets || [];
+        if(tickets.length === 0) {
+          box.innerHTML = '<p class="text-slate-400">ምንም ቲኬት አልተገኘም</p>';
+          return;
+        }
+        tickets.forEach(t => {
+          box.innerHTML += `
+            <div class="p-2 bg-white/5 rounded flex justify-between items-center border border-white/10">
+              <span><b>${t.ticketNumber}</b> (${t.paymentMethod})</span>
+              <span class="font-bold ${t.status === 'Approved' ? 'text-emerald-400' : 'text-amber-400'}">${t.status}</span>
+            </div>`;
+        });
+      } catch (err) {
+        console.error("Search failed:", err);
       }
-      data.tickets.forEach(t => {
-        box.innerHTML += `
-          <div class="p-2 bg-white/5 rounded flex justify-between items-center border border-white/10">
-            <span><b>${t.ticketNumber}</b> (${t.paymentMethod})</span>
-            <span class="font-bold ${t.status === 'Approved' ? 'text-emerald-400' : 'text-amber-400'}">${t.status}</span>
-          </div>`;
-      });
     }
 
-    // Admin Tickets Load & Approve
+    // Admin Tickets Load & Approve (with Defensive Programming checks)
     async function loadAdminTickets() {
-      const res = await fetch(`${API}/admin/tickets`);
-      const data = await res.json();
-      const list = document.getElementById('adminTicketList');
-      list.innerHTML = '';
-      data.tickets.forEach(t => {
-        list.innerHTML += `
-          <tr class="border-b border-white/5">
-            <td class="py-2 px-2">${t.fullName}</td>
-            <td class="py-2 px-2">${t.phone}</td>
-            <td class="py-2 px-2">${t.transactionId}</td>
-            <td class="py-2 px-2 font-bold text-yellow-400">${t.ticketNumber}</td>
-            <td class="py-2 px-2"><span class="px-2 py-0.5 rounded font-bold ${t.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${t.status}</span></td>
-            <td class="py-2 px-2">
-              ${t.status === 'Pending' ? `<button onclick="approveTicket('${t.id}')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold">አጽድቅ</button>` : 'ጸድቋል'}
-            </td>
-          </tr>`;
-      });
+      try {
+        const res = await fetch(`${API}/admin/tickets`);
+        const data = await res.json();
+        const list = document.getElementById('adminTicketList');
+        list.innerHTML = '';
+        
+        const tickets = data.tickets || [];
+        if(tickets.length === 0) {
+          list.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-slate-400">ምንም ቲኬት የለም</td></tr>';
+          return;
+        }
+        tickets.forEach(t => {
+          list.innerHTML += `
+            <tr class="border-b border-white/5">
+              <td class="py-2 px-2">${t.fullName}</td>
+              <td class="py-2 px-2">${t.phone}</td>
+              <td class="py-2 px-2">${t.transactionId}</td>
+              <td class="py-2 px-2 font-bold text-yellow-400">${t.ticketNumber}</td>
+              <td class="py-2 px-2"><span class="px-2 py-0.5 rounded font-bold ${t.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${t.status}</span></td>
+              <td class="py-2 px-2">
+                ${t.status === 'Pending' ? `<button onclick="approveTicket('${t.id}')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold">አጽድቅ</button>` : 'ጸድቋል'}
+              </td>
+            </tr>`;
+        });
+      } catch (err) {
+        console.error("Failed to load admin tickets:", err);
+      }
     }
 
     async function approveTicket(id) {
@@ -339,19 +365,23 @@
 
     // Trigger Draw
     async function triggerDraw() {
-      const res = await fetch(`${API}/draw-winner`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prize: '1,000,000 ብር መኪና እና ሽልማት' })
-      });
-      const data = await res.json();
-      const winnerBox = document.getElementById('winnerResult');
-      if (data.success) {
-        winnerBox.classList.remove('hidden');
-        winnerBox.innerHTML = `🎉 እንኳን ደስ አለዎት!<br>አሸናፊ: <span class="text-white">${data.winner.fullName}</span><br>ቲኬት ቁጥር: <span class="text-yellow-300">${data.winner.ticketNumber}</span><br>ሽልማት: ${data.winner.prizeWon}`;
-        confetti({ particleCount: 250, spread: 100, origin: { y: 0.6 } });
-      } else {
-        alert(data.message);
+      try {
+        const res = await fetch(`${API}/draw-winner`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prize: '1,000,000 ብር መኪና እና ሽልማት' })
+        });
+        const data = await res.json();
+        const winnerBox = document.getElementById('winnerResult');
+        if (data.success) {
+          winnerBox.classList.remove('hidden');
+          winnerBox.innerHTML = `🎉 እንኳን ደስ አለዎት!<br>አሸናፊ: <span class="text-white">${data.winner.fullName}</span><br>ቲኬት ቁጥር: <span class="text-yellow-300">${data.winner.ticketNumber}</span><br>ሽልማት: ${data.winner.prizeWon}`;
+          confetti({ particleCount: 250, spread: 100, origin: { y: 0.6 } });
+        } else {
+          alert(data.message);
+        }
+      } catch (err) {
+        alert('ዕጣ ማውጣት አልተቻለም');
       }
     }
   </script>
