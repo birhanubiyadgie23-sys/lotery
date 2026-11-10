@@ -12,7 +12,7 @@ A free, browser-only participant turn selector for classroom discussion, group a
 
 ## Run tests
 
-Requires Node.js 26.x.
+Requires Node.js 24.x (the version pinned in package.json).
 
     npm test
 
