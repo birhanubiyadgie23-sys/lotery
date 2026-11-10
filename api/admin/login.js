@@ -15,8 +15,13 @@ export default async function handler(req, res) {
 
     const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
     const anon = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (!url || !anon || !process.env.ADMIN_EMAILS) {
-      throw new Error('SUPABASE_URL / SUPABASE_ANON_KEY / ADMIN_EMAILS አልተዋቀሩም');
+    const missing = [
+      !url && 'SUPABASE_URL',
+      !anon && 'SUPABASE_ANON_KEY',
+      !process.env.ADMIN_EMAILS && 'ADMIN_EMAILS',
+    ].filter(Boolean);
+    if (missing.length) {
+      throw new Error('እነዚህ ተለዋዋጮች በ Vercel ላይ አልተገኙም: ' + missing.join(', '));
     }
 
     // Separate anon client just for sign-in; it never touches the service-role client.
