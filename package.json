@@ -1,8 +1,0 @@
-{
-  "name": "classroom-turn-picker",
-  "version": "1.1.0",
-  "private": true,
-  "type": "module",
-  "engines": { "node": "26.x" },
-  "scripts": { "test": "node --test" }
-}
