@@ -13,27 +13,30 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ success: false, message: 'Method Not Allowed' });
 
   try {
-    const { fullName, phone, paymentMethod, transactionId } = req.body;
-    if (!fullName || !phone || !transactionId) {
-      return res.status(400).json({ success: false, message: 'እባክዎን ሁሉንም መረጃዎች ይሙሉ' });
+    const { fullName, phone, paymentMethod, transactionId, ticketNumber } = req.body;
+
+    if (!fullName || !phone || !paymentMethod || !transactionId || !ticketNumber) {
+      return res.status(400).json({ success: false, message: 'እባክዎ ሁሉንም መረጃዎች ይሙሉ' });
     }
 
-    const ticketNumber = 'ETH-' + Math.floor(100000 + Math.random() * 900000);
-    
+    // መረጃውን ወደ Supabase tickets ቴብል መመዝገብ (status በነባሪ Pending ይሆናል)
     const { data, error } = await supabase
       .from('tickets')
-      .insert([{ fullName, phone, paymentMethod, transactionId, ticketNumber, status: 'Pending', isWinner: false, prizeWon: null }])
-      .select()
-      .single();
+      .insert([
+        {
+          fullName,
+          phone,
+          paymentMethod,
+          transactionId,
+          ticketNumber,
+          status: 'Pending', // አድሚኑ እንዲያጸድቀው በPending ይገባል
+          isWinner: false
+        }
+      ]);
 
-    if (error) {
-      if (error.code === '23505') {
-        return res.status(400).json({ success: false, message: 'ይህ የትራንዛክሽን ቁጥር ቀድሞ ጥቅም ላይ ውሏል!' });
-      }
-      return res.status(500).json({ success: false, message: error.message });
-    }
+    if (error) throw error;
 
-    return res.status(200).json({ success: true, ticket: data });
+    return res.status(200).json({ success: true, message: 'ቲኬቱ በተሳካ ሁኔታ ተገዝቷል! በአድሚን ማጽደቅ ይጠበቅብታል።' });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
