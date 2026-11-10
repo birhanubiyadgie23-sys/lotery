@@ -63,7 +63,7 @@ app.get('/api/tickets', async (req, res) => {
       .order('createdAt', { ascending: false });
 
     if (error) throw error;
-    res.json({ success: true, tickets: data });
+    res.json({ success: true, tickets: data || [] });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -78,7 +78,7 @@ app.get('/api/prizes', async (req, res) => {
       .order('createdAt', { ascending: false });
 
     if (error) throw error;
-    res.json({ success: true, prizes: data });
+    res.json({ success: true, prizes: data || [] });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -88,6 +88,9 @@ app.get('/api/prizes', async (req, res) => {
 app.post('/api/admin/add-prize', async (req, res) => {
   try {
     const { prizeName, amount, description } = req.body;
+    if (!prizeName || !amount) {
+      return res.status(400).json({ success: false, message: 'የሽልማቱን ስም እና መጠን ያስገቡ' });
+    }
     const { error } = await supabase
       .from('prizes')
       .insert([{ prizeName: prizeName, amount: amount, description: description }]);
@@ -109,7 +112,7 @@ app.get('/api/my-tickets/:phone', async (req, res) => {
       .order('createdAt', { ascending: false });
 
     if (error) throw error;
-    res.json({ success: true, tickets: data });
+    res.json({ success: true, tickets: data || [] });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -124,7 +127,7 @@ app.get('/api/admin/tickets', async (req, res) => {
       .order('createdAt', { ascending: false });
 
     if (error) throw error;
-    res.json({ success: true, tickets: data });
+    res.json({ success: true, tickets: data || [] });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
